@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 require("dotenv").config();
 const port = process.env.POST || 5000;
@@ -25,20 +25,41 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const emsCollection = client.db("EMSDB").collection("Employee");
+    // const emsCollection = client.db("EMSDB").collection("Employee");
     const userCollection = client.db("EMSDB").collection("User");
-
-    app.get("/users", async (req, res) => {
-      const cursor = userCollection.find();
-      const result = await cursor.toArray();
-      res.send(result);
-    });
 
     // post method for registered user
     app.post("/users", async (req, res) => {
       const user = req.body;
       console.log(user);
       const result = await userCollection.insertOne(user);
+      res.send(result);
+    });
+
+    // getting all the user data from database
+    // app.get("/users", async (req, res) => {
+    //   const cursor = userCollection.find();
+    //   const result = await cursor.toArray();
+    //   res.send(result);
+    // });
+
+    // getting single user data from the database
+    // Get single user from database
+    // app.get("/users/:id", async (req, res) => {
+    //   const id = req.params.id;
+    //   const query = { _id: new ObjectId(id) };
+    //   const user = await userCollection.findOne(query);
+    //   res.send(user);
+    // });
+    // ✅ Fixed route
+    app.get("/users", async (req, res) => {
+      const email = req.query.email;
+      if (email) {
+        const user = await userCollection.findOne({ email: email });
+        if (!user) return res.status(404).send({ message: "User not found" });
+        return res.send(user);
+      }
+      const result = userCollection.find().toArray();
       res.send(result);
     });
 
