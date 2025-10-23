@@ -37,11 +37,11 @@ async function run() {
     });
 
     // getting all the user data from database
-    // app.get("/users", async (req, res) => {
-    //   const cursor = userCollection.find();
-    //   const result = await cursor.toArray();
-    //   res.send(result);
-    // });
+    app.get("/users", async (req, res) => {
+      const cursor = userCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
     // getting single user data from the database
     // Get single user from database
@@ -51,8 +51,9 @@ async function run() {
     //   const user = await userCollection.findOne(query);
     //   res.send(user);
     // });
+
     // ✅ Fixed route
-    app.get("/users", async (req, res) => {
+    app.get("/user", async (req, res) => {
       const email = req.query.email;
       if (email) {
         const user = await userCollection.findOne({ email: email });
